@@ -9,19 +9,21 @@
 body {
   margin: 0;
   padding: 40px 16px;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
   text-align: center;
 }
 
+/* ===== タイトル ===== */
 h1 {
   font-size: 1.1em;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   margin-bottom: 24px;
 }
 
+/* ===== カード全体 ===== */
 .card-container {
-  perspective: 1000px;
+  perspective: 1200px;
   max-width: 360px;
   margin: 0 auto;
 }
@@ -39,20 +41,21 @@ h1 {
   transform: rotateY(180deg);
 }
 
+/* ===== 表・裏 共通 ===== */
 .card-face {
   position: absolute;
   inset: 0;
   border-radius: 18px;
   backface-visibility: hidden;
   box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-  background: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 20px;
+  padding: 22px;
   box-sizing: border-box;
 }
 
+/* ===== 表 ===== */
 .card-front {
   overflow: hidden;
 }
@@ -68,16 +71,72 @@ h1 {
   position: absolute;
   bottom: 14px;
   font-size: 0.85em;
+  letter-spacing: 0.1em;
   background: rgba(255,255,255,0.85);
   padding: 6px 14px;
   border-radius: 999px;
 }
 
+/* ===== きらり演出 ===== */
+.card-front::after {
+  content: "";
+  position: absolute;
+  inset: -40%;
+  background: linear-gradient(
+    120deg,
+    transparent 40%,
+    rgba(255,255,255,0.85) 50%,
+    transparent 60%
+  );
+  transform: translateX(-100%);
+  pointer-events: none;
+}
+
+.card-inner.flipped .card-front::after {
+  animation: shine 0.6s ease-out;
+}
+
+@keyframes shine {
+  from { transform: translateX(-100%); }
+  to   { transform: translateX(100%); }
+}
+
+/* ===== 裏（CSS和紙風） ===== */
 .card-back {
   transform: rotateY(180deg);
-  font-size: 1.2em;
-  line-height: 1.8;
-  letter-spacing: 0.03em;
+
+  background:
+    radial-gradient(circle at 18% 28%, rgba(0,0,0,0.03), transparent 40%),
+    radial-gradient(circle at 75% 70%, rgba(0,0,0,0.025), transparent 45%),
+    radial-gradient(circle at 60% 18%, rgba(0,0,0,0.02), transparent 35%),
+    linear-gradient(0deg, #fdfbf6, #f7f3ea);
+
+  font-size: 1.15em;
+  line-height: 1.9;
+  letter-spacing: 0.06em;
+
+  text-align: left;
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  line-break: strict;
+
+  box-shadow:
+    inset 0 0 30px rgba(0,0,0,0.04),
+    0 12px 30px rgba(0,0,0,0.18);
+}
+
+.card-back-inner {
+  max-width: 92%;
+  margin: 0 auto;
+}
+
+/* 回数表示 */
+#counter {
+  margin-top: 22px;
+  font-size: 0.72em;
+  letter-spacing: 0.12em;
+  opacity: 0.65;
+  text-align: center;
 }
 </style>
 </head>
@@ -97,13 +156,16 @@ h1 {
 
     <!-- 裏 -->
     <div class="card-face card-back">
-      <p id="question">ここに質問が表示されます</p>
+      <div class="card-back-inner">
+        <p id="question">ここに問いが現れます</p>
+        <p id="counter"></p>
+      </div>
     </div>
 
   </div>
 </div>
 
-<!-- 🔊 めくる音 -->
+<!-- めくり音 -->
 <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
@@ -121,9 +183,14 @@ const questions = [
   "イラッとするのはどんなときですか？"
 ];
 
+// 累積カウント（保存）
+let count = localStorage.getItem("bonnoCount");
+count = count ? Number(count) : 0;
+
+// 安全な乱数
 function getSecureRandomInt(max) {
   const array = new Uint32Array(1);
-  window.crypto.getRandomValues(array);
+  crypto.getRandomValues(array);
   return array[0] % max;
 }
 
@@ -131,15 +198,17 @@ function flipCard() {
   const card = document.getElementById("card");
   const sound = document.getElementById("flipSound");
 
-  // 音を鳴らす（連打対応）
-  sound.currentTime = 0;
-  sound.volume = 0.6;
-  sound.play();
-
-  // めくる瞬間だけ質問を更新
   if (!card.classList.contains("flipped")) {
     const i = getSecureRandomInt(questions.length);
     document.getElementById("question").textContent = questions[i];
+
+    count++;
+    localStorage.setItem("bonnoCount", count);
+    document.getElementById("counter").textContent =
+      `あなたで ${count}回目の質問です`;
+
+    sound.currentTime = 0;
+    sound.play();
   }
 
   card.classList.toggle("flipped");
