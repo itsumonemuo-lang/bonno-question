@@ -161,18 +161,17 @@
     
     ];
 
-    function flipCard() {
-      const card = document.getElementById("card");
-      const question = document.getElementById("question");
+   function getSecureRandomInt(max) {
+  const array = new Uint32Array(1);
+  window.crypto.getRandomValues(array);
+  return array[0] % max;
+}
 
-      if (!card.classList.contains("flipped")) {
-        const random = questions[Math.floor(Math.random() * questions.length)];
-        question.textContent = random;
-      }
-
-      card.classList.toggle("flipped");
-    }
-  </script>
+function showQuestion() {
+  const i = getSecureRandomInt(questions.length);
+  document.getElementById("question").textContent = questions[i];
+}
+</script>
 
 </body>
 </html>
