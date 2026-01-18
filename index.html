@@ -62,6 +62,18 @@
       煩悩をひらく
     </button>
   </div>
+<script>
+  const questions = [
+    "自由にキャッチコピーや肩書をつけて名のってください",
+    "自分の時間をつくるなら早起き派、夜更かし派？",
+    "実行済みの「ひとり○○」の中で一番ハードルが高いものは？"
+  ];
+
+  function showQuestion() {
+    const q = questions[Math.floor(Math.random() * questions.length)];
+    document.getElementById("question").textContent = q;
+  }
+</script>
 
   <!-- script はこの下にそのまま -->
 </body>
