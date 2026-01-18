@@ -1,134 +1,97 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <title>煩悩Maxカード | ランダム質問</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<title>煩悩Maxカード</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    body {
-      margin: 0;
-      padding: 40px 16px;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-      background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
-      text-align: center;
-    }
+<style>
+body {
+  margin: 0;
+  padding: 40px 16px;
+  font-family: system-ui, sans-serif;
+  background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
+  text-align: center;
+}
 
-    h1 {
-      font-size: 1.1em;
-      letter-spacing: 0.08em;
-      margin-bottom: 24px;
-    }
+.card-container {
+  perspective: 1000px;
+  max-width: 360px;
+  margin: 0 auto;
+}
 
-    /* ===== カード全体 ===== */
-    .card-container {
-      perspective: 1000px;
-      max-width: 360px;
-      margin: 0 auto;
-    }
+.card-inner {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
+  cursor: pointer;
+}
 
-    .card-inner {
-      position: relative;
-      width: 100%;
-      aspect-ratio: 3 / 4;
-      transform-style: preserve-3d;
-      transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
-      cursor: pointer;
-    }
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
 
-    .card-inner.flipped {
-      transform: rotateY(180deg);
-    }
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
 
-    /* ===== 表・裏 共通 ===== */
-    .card-face {
-      position: absolute;
-      inset: 0;
-      border-radius: 18px;
-      backface-visibility: hidden;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-      background: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 20px;
-      box-sizing: border-box;
-    }
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
 
-    /* ===== 表 ===== */
-    .card-front {
-      overflow: hidden;
-    }
+.tap-text {
+  position: absolute;
+  bottom: 14px;
+  font-size: 0.85em;
+  background: rgba(255,255,255,0.85);
+  padding: 6px 14px;
+  border-radius: 999px;
+}
 
-    .card-front img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-      border-radius: 14px;
-    }
-
-    .tap-text {
-      position: absolute;
-      bottom: 14px;
-      font-size: 0.85em;
-      letter-spacing: 0.1em;
-      opacity: 0.85;
-      background: rgba(255,255,255,0.85);
-      padding: 6px 14px;
-      border-radius: 999px;
-    }
-
-    /* ===== 裏 ===== */
-    .card-back {
-      transform: rotateY(180deg);
-      font-size: 1.25em;
-      line-height: 1.8;
-      letter-spacing: 0.03em;
-    }
-
-    .hint {
-      margin-top: 24px;
-      font-size: 0.85em;
-      opacity: 0.7;
-    }
-  </style>
+.card-back {
+  transform: rotateY(180deg);
+  font-size: 1.2em;
+  line-height: 1.8;
+}
+</style>
 </head>
 
 <body>
 
-  <h1>煩悩Maxカード</h1>
+<h1>煩悩Maxカード</h1>
 
-  <div class="card-container">
-    <div class="card-inner" id="card" onclick="flipCard()">
+<div class="card-container">
+  <div class="card-inner" id="card" onclick="flipCard()">
 
-      <!-- 表 -->
-      <div class="card-face card-front">
-        <img src="front.png" alt="煩悩カード 表">
-        <div class="tap-text">タップしてひらく</div>
-      </div>
-
-      <!-- 裏 -->
-      <div class="card-face card-back">
-        <p id="question">ここに質問が表示されます</p>
-      </div>
-
+    <div class="card-face card-front">
+      <img src="front.png" alt="煩悩カード 表">
+      <div class="tap-text">タップしてひらく</div>
     </div>
+
+    <div class="card-face card-back">
+      <p id="question">ここに質問が表示されます</p>
+    </div>
+
   </div>
+</div>
 
-  <div class="hint">もう一度タップすると戻ります</div>
-
-  <script>
-    const questions = [
-      "人と比べて、つい苦しくなるのはどんなとき？",
-      "今、手放したいのに手放せないものは？",
-      "認められたいと思っていることは？",
-      "本当は言いたいのに飲み込んでいる言葉は？",
-      "安心のために、つい繰り返してしまう行動は？",
-      "自分はダメだと思ってしまう瞬間は？",
-      "他人の評価が気になってしまう理由は？",
-      "スマホを見続けてしまうとき、何を避けている？"
-      "直近の善行を教えてください"
-     "自由にキャッチコピーや肩書をつけて名のってください",
+<script>
+const questions = [
+  "自由にキャッチコピーや肩書をつけて名のってください",
   "自分の時間をつくるなら早起き派、夜更かし派？",
   "実行済みの「ひとり○○」の中で、一番ハードルが高いと思うものは？",
   "直近の善行を教えてください",
@@ -138,38 +101,24 @@
   "人生の転機だった（気がする）できごとは？",
   "１年以内に買ったものの中で一番高いものは？",
   "仕事中の服装と、寝るときの格好（服装）は？",
-  "どういう系統の服が好きですか？",
-  "私服にプリントされている英字を教えてください",
-  "言語を１つ、完全に習得できるとしたら、何語がいいですか？",
-  "視界に入った人の情報が１つだけ分かる能力を持つとしたら、何を知りたいですか？",
-  "一番最初に遊んだゲームは？",
-  "好きな作品（映画、漫画、小説、ゲーム等）のジャンルは？",
-  "一番泣いた作品は？",
-  "何度も繰り返し見た（読んだ、遊んだ）作品は？",
-  "すごいなぁと思う人は誰ですか？",
-  "自分はこの影響を受けているな、と思う人や作品等を教えてください",
-  "今、興味関心がある、気になっているもの、ことは？",
-  "最近ハマっているもの、ことは？",
-  "最近ちょっと心配なことは？",
-  "好きなことわざ、四字熟語、格言を教えてください",
-  "名言だと思う誰かのセリフ、発言を教えてください",
-  "かわいい・かっこいいと思うものをそれぞれ教えてください",
-  "一番好きな薬味は？",
-  "一番好きなアイスは？",
-  "一番好きな魚卵は？",
   "イラッとするのはどんなときですか？"
-    
-    ];
+];
 
-   function getSecureRandomInt(max) {
+function getSecureRandomInt(max) {
   const array = new Uint32Array(1);
   window.crypto.getRandomValues(array);
   return array[0] % max;
 }
 
-function showQuestion() {
-  const i = getSecureRandomInt(questions.length);
-  document.getElementById("question").textContent = questions[i];
+function flipCard() {
+  const card = document.getElementById("card");
+
+  if (!card.classList.contains("flipped")) {
+    const i = getSecureRandomInt(questions.length);
+    document.getElementById("question").textContent = questions[i];
+  }
+
+  card.classList.toggle("flipped");
 }
 </script>
 
