@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>煩悩108問ランダム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: #f6f4ef;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    h1 {
+      font-size: 1.6em;
+    }
+    #question {
+      margin: 30px auto;
+      font-size: 1.3em;
+      line-height: 1.6;
+      max-width: 600px;
+    }
+    button {
+      font-size: 1.1em;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 6px;
+      background: #5c3d2e;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>煩悩カード｜ランダム質問</h1>
+
+  <div id="question">
+    ボタンを押すと、煩悩にまつわる問いが表示されます
+  </div>
+
+  <button onclick="showQuestion()">煩悩をひらく</button>
+
+  <script>
+    const questions = [
+      "最近、つい他人と比べてしまったことは？",
+      "欲しいものを我慢できなかった経験は？",
+      "SNSで承認欲求を感じた瞬間は？",
+      "怒りが抑えられなかった出来事は？",
+      "楽をしたいと思った場面は？"
+      // ←あとでここに108問まで足していく
+    ];
+
+    function showQuestion() {
+      const randomIndex = Math.floor(Math.random() * questions.length);
+      document.getElementById("question").textContent = questions[randomIndex];
+    }
+  </script>
+
+</body>
+</html>
