@@ -2,80 +2,145 @@
 <html lang="ja">
 <head>
   <meta charset="UTF-8">
-  <title>煩悩108問ランダム</title>
+  <title>煩悩カード | ランダム質問</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
- <style>
-  body {
-    font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-    background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
-    text-align: center;
-    padding: 40px 16px;
-  }
 
-  .card {
-    background: #ffffff;
-    max-width: 420px;
-    margin: 0 auto;
-    padding: 32px 24px;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
-  }
+  <style>
+    body {
+      margin: 0;
+      padding: 40px 16px;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+      background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
+      text-align: center;
+    }
 
-  h1 {
-    font-size: 1.2em;
-    margin-bottom: 20px;
-    letter-spacing: 0.05em;
-  }
+    h1 {
+      font-size: 1.1em;
+      letter-spacing: 0.08em;
+      margin-bottom: 24px;
+    }
 
-  #question {
-    font-size: 1.25em;
-    line-height: 1.7;
-    margin: 30px 0;
-    min-height: 4em;
-  }
+    /* ===== カード全体 ===== */
+    .card-container {
+      perspective: 1000px;
+      max-width: 360px;
+      margin: 0 auto;
+    }
 
-  button {
-    font-size: 1em;
-    padding: 12px 24px;
-    border-radius: 999px;
-    border: none;
-    background: #4a4a4a;
-    color: #fff;
-    cursor: pointer;
-  }
+    .card-inner {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 3 / 4;
+      transform-style: preserve-3d;
+      transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
+      cursor: pointer;
+    }
 
-  button:hover {
-    opacity: 0.85;
-  }
-</style>
+    .card-inner.flipped {
+      transform: rotateY(180deg);
+    }
+
+    /* ===== 表・裏 共通 ===== */
+    .card-face {
+      position: absolute;
+      inset: 0;
+      border-radius: 18px;
+      backface-visibility: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+      background: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* ===== 表 ===== */
+    .card-front {
+      overflow: hidden;
+    }
+
+    .card-front img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 14px;
+    }
+
+    .tap-text {
+      position: absolute;
+      bottom: 14px;
+      font-size: 0.85em;
+      letter-spacing: 0.1em;
+      opacity: 0.85;
+      background: rgba(255,255,255,0.85);
+      padding: 6px 14px;
+      border-radius: 999px;
+    }
+
+    /* ===== 裏 ===== */
+    .card-back {
+      transform: rotateY(180deg);
+      font-size: 1.25em;
+      line-height: 1.8;
+      letter-spacing: 0.03em;
+    }
+
+    .hint {
+      margin-top: 24px;
+      font-size: 0.85em;
+      opacity: 0.7;
+    }
+  </style>
 </head>
+
 <body>
 
-  <div class="card">
-    <h1>煩悩カード</h1>
+  <h1>煩悩カード</h1>
 
-    <p id="question">
-      ボタンを押して、煩悩をひらく
-    </p>
+  <div class="card-container">
+    <div class="card-inner" id="card" onclick="flipCard()">
 
-    <button onclick="showQuestion()">
-      煩悩をひらく
-    </button>
+      <!-- 表 -->
+      <div class="card-face card-front">
+        <img src="front.png" alt="煩悩カード 表">
+        <div class="tap-text">タップしてひらく</div>
+      </div>
+
+      <!-- 裏 -->
+      <div class="card-face card-back">
+        <p id="question">ここに質問が表示されます</p>
+      </div>
+
+    </div>
   </div>
-<script>
-  const questions = [
-    "自由にキャッチコピーや肩書をつけて名のってください",
-    "自分の時間をつくるなら早起き派、夜更かし派？",
-    "実行済みの「ひとり○○」の中で一番ハードルが高いものは？"
-  ];
 
-  function showQuestion() {
-    const q = questions[Math.floor(Math.random() * questions.length)];
-    document.getElementById("question").textContent = q;
-  }
-</script>
+  <div class="hint">もう一度タップすると戻ります</div>
 
-  <!-- script はこの下にそのまま -->
+  <script>
+    const questions = [
+      "人と比べて、つい苦しくなるのはどんなとき？",
+      "今、手放したいのに手放せないものは？",
+      "認められたいと思っていることは？",
+      "本当は言いたいのに飲み込んでいる言葉は？",
+      "安心のために、つい繰り返してしまう行動は？",
+      "自分はダメだと思ってしまう瞬間は？",
+      "他人の評価が気になってしまう理由は？",
+      "スマホを見続けてしまうとき、何を避けている？"
+    ];
+
+    function flipCard() {
+      const card = document.getElementById("card");
+      const question = document.getElementById("question");
+
+      if (!card.classList.contains("flipped")) {
+        const random = questions[Math.floor(Math.random() * questions.length)];
+        question.textContent = random;
+      }
+
+      card.classList.toggle("flipped");
+    }
+  </script>
+
 </body>
-
 </html>
