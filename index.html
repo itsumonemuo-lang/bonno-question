@@ -109,6 +109,7 @@ h1 {
 /* ===== シェア ===== */
 .share-area {
   margin-top: 24px;
+  text-align: center;
 }
 
 .share-title {
@@ -119,12 +120,12 @@ h1 {
 
 .share-buttons button {
   margin: 4px;
-  padding: 6px 12px;
+  padding: 6px 14px;
   border-radius: 999px;
   border: none;
   font-size: 0.8em;
   cursor: pointer;
-  background: rgba(255,255,255,0.85);
+  background: rgba(255,255,255,0.9);
 }
 </style>
 </head>
@@ -151,18 +152,18 @@ h1 {
         <div class="share-area">
           <div class="share-title">この煩悩をシェアする</div>
           <div class="share-buttons">
-            <button onclick="shareX()">X</button>
-            <button onclick="shareLINE()">LINE</button>
-            <button onclick="shareInstagram()">Instagram</button>
+            <button onclick="shareX(event)">X</button>
+            <button onclick="shareLINE(event)">LINE</button>
+            <button onclick="shareInstagram(event)">Instagram</button>
           </div>
         </div>
-
       </div>
     </div>
 
   </div>
 </div>
 
+<!-- 効果音 -->
 <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
@@ -211,21 +212,27 @@ function flipCard() {
 
 /* ===== 共有 ===== */
 function shareText() {
-  return `今日ひらいた煩悩。\n\n「${currentQuestion}」`;
+  return `今日ひらいた煩悩。\n\nQ. ${currentQuestion}\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿`;
 }
 
-function shareX() {
+function shareX(e) {
+  e.stopPropagation();
   const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText())}`;
   window.open(url, "_blank");
 }
 
-function shareLINE() {
+function shareLINE(e) {
+  e.stopPropagation();
   const url = `https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(shareText())}`;
   window.open(url, "_blank");
 }
 
-function shareInstagram() {
-  alert("Instagramは投稿前に文章をコピーしてください。\n\n" + shareText());
+function shareInstagram(e) {
+  e.stopPropagation();
+  alert(
+    "Instagramは文章をコピーして投稿してください。\n\n" +
+    shareText()
+  );
 }
 </script>
 
