@@ -2,36 +2,43 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>煩悩Maxカード（みんなで語ろう）</title>
+<title>煩悩Maxカード</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
+/* ===== ページ全体の背景 ===== */
 body {
   margin: 0;
   padding: 40px 16px;
   font-family: system-ui, sans-serif;
-  background: linear-gradient(135deg, #f6f4ef, #e9e4d8);
   text-align: center;
+
+  background: url('background.jpg') no-repeat center center fixed;
+  background-size: cover;
 }
 
+/* ===== タイトル ===== */
 h1 {
   font-size: 1.1em;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   margin-bottom: 24px;
+  color: #222;
 }
 
+/* ===== カード外枠 ===== */
 .card-container {
-  perspective: 1000px;
+  perspective: 1200px;
   max-width: 360px;
   margin: 0 auto;
 }
 
+/* ===== カード本体 ===== */
 .card-inner {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
   transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
+  transition: transform 0.9s cubic-bezier(.4,.2,.2,1);
   cursor: pointer;
 }
 
@@ -45,164 +52,136 @@ h1 {
   inset: 0;
   border-radius: 18px;
   backface-visibility: hidden;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.18);
-  overflow: hidden;
+  box-shadow: 0 14px 35px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
 }
 
 /* ===== 表 ===== */
+.card-front {
+  overflow: hidden;
+  background: #fff;
+}
+
 .card-front img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 14px;
 }
 
 .tap-text {
   position: absolute;
   bottom: 14px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.8em;
+  font-size: 0.85em;
+  letter-spacing: 0.1em;
   background: rgba(255,255,255,0.85);
   padding: 6px 14px;
   border-radius: 999px;
 }
 
-/* ===== 裏 ===== */
+/* ===== 裏（和紙） ===== */
 .card-back {
   transform: rotateY(180deg);
+  background: url('washi.jpg') center / cover no-repeat;
+  color: #222;
+  text-align: left;
 }
 
-/* 和紙背景 */
-#card-bg {
+/* 和紙の上に白をうっすら重ねる */
+.card-back::before {
+  content: "";
   position: absolute;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  background: rgba(255,255,255,0.75);
+  border-radius: 18px;
 }
 
-/* 文字レイヤー */
-#card-content {
+/* 中身 */
+.card-content {
   position: relative;
-  z-index: 2;
-  height: 100%;
-  padding: 24px;
-  box-sizing: border-box;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+  z-index: 1;
+  width: 100%;
 }
 
+/* カウント */
 #count {
   font-size: 0.75em;
-  opacity: 0.6;
-  margin-bottom: 16px;
+  opacity: 0.7;
+  margin-bottom: 12px;
+  text-align: center;
 }
 
+/* 質問文 */
 #question {
   font-size: 1.15em;
   line-height: 1.9;
-  letter-spacing: 0.04em;
-  word-break: keep-all;
-}
-
-/* ✨ きらり演出 */
-.sparkle {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    120deg,
-    transparent 30%,
-    rgba(255,255,255,0.6),
-    transparent 70%
-  );
-  transform: translateX(-100%);
-  pointer-events: none;
-}
-
-.sparkle.active {
-  animation: sparkle 0.6s ease;
-}
-
-@keyframes sparkle {
-  to {
-    transform: translateX(100%);
-  }
+  letter-spacing: 0.03em;
+  word-break: break-word;
 }
 </style>
 </head>
 
 <body>
 
-<h1>煩悩Maxカード（みんなで語ろう）</h1>
+<h1>煩悩Maxカード</h1>
 
 <div class="card-container">
   <div class="card-inner" id="card" onclick="flipCard()">
 
     <!-- 表 -->
     <div class="card-face card-front">
-      <img src="front.png" alt="カード表">
+      <img src="front.png" alt="煩悩カード 表">
       <div class="tap-text">タップしてひらく</div>
     </div>
 
     <!-- 裏 -->
     <div class="card-face card-back">
-
-      <img id="card-bg" src="washi.jpg" alt="和紙背景">
-      <div class="sparkle" id="sparkle"></div>
-
-      <div id="card-content">
-        <div id="count"> 0 回目の質問です</div>
+      <div class="card-content">
+        <div id="count">あなたで 0 回目の質問です</div>
         <div id="question">ここに質問が表示されます</div>
       </div>
-
     </div>
 
   </div>
 </div>
 
-<audio id="flipSound" src="flip.mp3" preload="auto"></audio>
-
 <script>
 const questions = [
-  "自由にキャッチコピーや、肩書をつけて名のってください",
+  "自由にキャッチコピーや肩書をつけて名のってください",
   "自分の時間をつくるなら早起き派、夜更かし派？",
-  "実行済みの「ひとり○○」で、一番ハードルが高かったものは？",
+  "実行済みの「ひとり○○」の中で、一番ハードルが高いと思うものは？",
   "直近の善行を教えてください",
-  "最近ちょっと心がざわついた出来事は？",
-  "人と比べて苦しくなるのはどんなとき？",
-  "手放したいのに手放せないものは？",
-  "イラッとするのはどんな瞬間？"
+  "全SNS系アカウントの合計フォロワー数を教えてください",
+  "子供の頃に好きだった、よく遊んだおもちゃは？",
+  "一番好き、または得意だった科目は？",
+  "人生の転機だった（気がする）できごとは？",
+  "１年以内に買ったものの中で一番高いものは？",
+  "仕事中の服装と、寝るときの格好（服装）は？",
+  "イラッとするのはどんなときですか？"
 ];
 
 let count = 0;
 
 function getSecureRandomInt(max) {
   const array = new Uint32Array(1);
-  crypto.getRandomValues(array);
+  window.crypto.getRandomValues(array);
   return array[0] % max;
 }
 
 function flipCard() {
   const card = document.getElementById("card");
-  const sparkle = document.getElementById("sparkle");
-  const sound = document.getElementById("flipSound");
 
   if (!card.classList.contains("flipped")) {
     const i = getSecureRandomInt(questions.length);
     document.getElementById("question").textContent = questions[i];
     count++;
     document.getElementById("count").textContent =
-      ` ${count} 回目の質問です`;
+      `あなたで ${count} 回目の質問です`;
   }
-
-  // 音＋きらり完全同期
-  sound.currentTime = 0;
-  sound.play();
-
-  sparkle.classList.remove("active");
-  void sparkle.offsetWidth;
-  sparkle.classList.add("active");
 
   card.classList.toggle("flipped");
 }
