@@ -82,22 +82,18 @@ button {
 
 #share-area {
   display: none;
-  margin-top: 25px;
+  margin-top: 22px;
 }
 
-.share-btn {
+.share-x {
   display: inline-block;
-  margin: 6px;
-  padding: 10px 14px;
+  padding: 10px 18px;
+  border-radius: 999px;
+  background: #000;
   color: #fff;
   text-decoration: none;
-  border-radius: 6px;
   font-size: 14px;
 }
-
-.x { background:#000; }
-.line { background:#06C755; }
-.insta { background:#C13584; }
 </style>
 </head>
 
@@ -113,10 +109,7 @@ button {
     <div id="count"></div>
 
     <div id="share-area">
-      <p>🔁 煩悩をシェアする</p>
-      <a id="share-x" class="share-btn x" target="_blank">X</a>
-      <a id="share-line" class="share-btn line" target="_blank">LINE</a>
-      <a id="share-insta" class="share-btn insta" target="_blank">Instagram</a>
+      <a id="share-x" class="share-x" target="_blank">Xでこの煩悩をシェア</a>
     </div>
   </div>
 </div>
@@ -125,15 +118,13 @@ button {
 
 <script>
 const questions = [
-  "Q. 人と比べて苦しくなるのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. 手放したいのに手放せないものは？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. 認められたいと思うのはどんな瞬間？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. つい見栄を張ってしまうのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿"
+  "Q. 人と比べて苦しくなるのはどんなとき？\n\nA.",
+  "Q. 手放したいのに手放せないものは？\n\nA.",
+  "Q. 認められたいと思うのはどんな瞬間？\n\nA.",
+  "Q. つい見栄を張ってしまうのはどんなとき？\n\nA."
 ];
 
 let lastIndex = -1;
-
-// 表示回数（端末ごと）
 let count = localStorage.getItem("bonnoCount") || 0;
 document.getElementById("count").innerText =
   `あなたで ${count} 回目の質問です`;
@@ -155,14 +146,15 @@ function drawCard() {
   sound.play();
 
   setTimeout(() => {
-    document.getElementById("question").innerText = questions[i];
+    const q = questions[i];
+    document.getElementById("question").innerText = q;
 
     count++;
     localStorage.setItem("bonnoCount", count);
     document.getElementById("count").innerText =
       `あなたで ${count} 回目の質問です`;
 
-    setupShare(questions[i]);
+    setupShare(q);
 
     card.classList.remove("flip");
     kirari.classList.remove("show");
@@ -171,18 +163,16 @@ function drawCard() {
 }
 
 function setupShare(q) {
-  const text = "今日ひらいた煩悩質問。\n" + q + "\n\n#煩悩カード";
-  const e = encodeURIComponent(text);
-  const u = encodeURIComponent(location.href);
+  const text =
+    "今日ひらいた煩悩質問。\n\n" +
+    q +
+    "\n\n▼あなたもひらく\n";
+
+  const url = location.href;
+  const encoded = encodeURIComponent(text + url);
 
   document.getElementById("share-x").href =
-    `https://twitter.com/intent/tweet?text=${e}&url=${u}`;
-
-  document.getElementById("share-line").href =
-    `https://social-plugins.line.me/lineit/share?url=${u}&text=${e}`;
-
-  document.getElementById("share-insta").href =
-    "https://www.instagram.com/";
+    `https://twitter.com/intent/tweet?text=${encoded}`;
 }
 </script>
 </body>
