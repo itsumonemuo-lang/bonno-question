@@ -2,239 +2,189 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>煩悩Maxカード</title>
+<title>煩悩カード</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
-  padding: 40px 16px;
-  font-family: system-ui, sans-serif;
-  background: url("background.jpg") no-repeat center center fixed;
-  background-size: cover;
+  font-family: "Hiragino Mincho ProN", serif;
+  background: url("background.jpg") center / cover no-repeat fixed;
+}
+
+#container {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#card {
+  width: 90%;
+  max-width: 420px;
+  background: url("washi.jpg") center / cover;
+  padding: 30px;
+  border-radius: 14px;
+  box-shadow: 0 15px 35px rgba(0,0,0,.35);
   text-align: center;
-}
-
-h1 {
-  font-size: 1.1em;
-  letter-spacing: 0.08em;
-  margin-bottom: 24px;
-}
-
-/* ===== カード ===== */
-.card-container {
-  perspective: 1000px;
-  max-width: 360px;
-  margin: 0 auto;
-}
-
-.card-inner {
   position: relative;
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
-  cursor: pointer;
+  overflow: hidden;
 }
 
-.card-inner.flipped {
-  transform: rotateY(180deg);
+#card.flip {
+  animation: flip 0.6s ease;
 }
 
-/* 光り演出 */
-.card-inner::after {
-  content: "";
+@keyframes flip {
+  0% { transform: rotateY(0); }
+  50% { transform: rotateY(90deg); }
+  100% { transform: rotateY(0); }
+}
+
+#kirari {
   position: absolute;
   inset: 0;
-  border-radius: 18px;
-  background: radial-gradient(circle at top left,
-    rgba(255,255,255,0.6),
-    rgba(255,255,255,0) 60%);
+  background: url("kirari.png") center / contain no-repeat;
   opacity: 0;
-  transition: opacity 0.3s;
   pointer-events: none;
 }
 
-.card-inner.flipped::after {
-  opacity: 1;
+#kirari.show {
+  animation: shine 0.6s ease;
 }
 
-/* 表裏共通 */
-.card-face {
-  position: absolute;
-  inset: 0;
-  border-radius: 18px;
-  backface-visibility: hidden;
-  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  box-sizing: border-box;
+@keyframes shine {
+  0% { opacity: 0; transform: scale(.8); }
+  50% { opacity: .9; transform: scale(1); }
+  100% { opacity: 0; transform: scale(1.2); }
 }
 
-/* 表 */
-.card-front img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border-radius: 14px;
-}
-
-.tap-text {
-  position: absolute;
-  bottom: 14px;
-  font-size: 0.85em;
-  background: rgba(255,255,255,0.85);
-  padding: 6px 14px;
-  border-radius: 999px;
-}
-
-/* 裏 */
-.card-back {
-  transform: rotateY(180deg);
-  background: url("washi.jpg") center/cover;
-  font-size: 1.1em;
-  line-height: 1.9;
-  text-align: left;
-}
-
-/* カウント */
-.count {
-  font-size: 0.75em;
-  opacity: 0.7;
-  margin-bottom: 10px;
-}
-
-/* ===== シェア ===== */
-.share-area {
-  margin-top: 24px;
-  text-align: center;
-}
-
-.share-title {
-  font-size: 0.9em;
-  margin-bottom: 8px;
-  opacity: 0.8;
-}
-
-.share-buttons button {
-  margin: 4px;
-  padding: 6px 14px;
-  border-radius: 999px;
+button {
+  padding: 12px 22px;
+  font-size: 16px;
   border: none;
-  font-size: 0.8em;
+  border-radius: 8px;
   cursor: pointer;
-  background: rgba(255,255,255,0.9);
 }
+
+#question {
+  margin-top: 20px;
+  font-size: 18px;
+  white-space: pre-wrap;
+  line-height: 1.7;
+}
+
+#count {
+  margin-top: 10px;
+  font-size: 13px;
+  opacity: .7;
+}
+
+#share-area {
+  display: none;
+  margin-top: 25px;
+}
+
+.share-btn {
+  display: inline-block;
+  margin: 6px;
+  padding: 10px 14px;
+  color: #fff;
+  text-decoration: none;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.x { background:#000; }
+.line { background:#06C755; }
+.insta { background:#C13584; }
 </style>
 </head>
 
 <body>
+<div id="container">
+  <div id="card">
+    <div id="kirari"></div>
 
-<h1>煩悩Maxカード</h1>
+    <h2>今日ひらいた煩悩質問</h2>
+    <button onclick="drawCard()">カードをめくる</button>
 
-<div class="card-container">
-  <div class="card-inner" id="card" onclick="flipCard()">
+    <div id="question"></div>
+    <div id="count"></div>
 
-    <!-- 表 -->
-    <div class="card-face card-front">
-      <img src="front.png" alt="煩悩カード 表">
-      <div class="tap-text">タップしてひらく</div>
+    <div id="share-area">
+      <p>🔁 煩悩をシェアする</p>
+      <a id="share-x" class="share-btn x" target="_blank">X</a>
+      <a id="share-line" class="share-btn line" target="_blank">LINE</a>
+      <a id="share-insta" class="share-btn insta" target="_blank">Instagram</a>
     </div>
-
-    <!-- 裏 -->
-    <div class="card-face card-back">
-      <div>
-        <div class="count" id="count"></div>
-        <p id="question">ここに質問が表示されます</p>
-
-        <div class="share-area">
-          <div class="share-title">この煩悩をシェアする</div>
-          <div class="share-buttons">
-            <button onclick="shareX(event)">X</button>
-            <button onclick="shareLINE(event)">LINE</button>
-            <button onclick="shareInstagram(event)">Instagram</button>
-          </div>
-        </div>
-      </div>
-    </div>
-
   </div>
 </div>
 
-<!-- 効果音 -->
-<audio id="flipSound" src="flip.mp3" preload="auto"></audio>
+<audio id="flip-sound" src="flip.mp3"></audio>
 
 <script>
 const questions = [
-  "自由にキャッチコピーや肩書をつけて名のってください",
-  "自分の時間をつくるなら早起き派、夜更かし派？",
-  "実行済みの「ひとり○○」の中で、一番ハードルが高いと思うものは？",
-  "直近の善行を教えてください",
-  "全SNS系アカウントの合計フォロワー数を教えてください",
-  "子供の頃に好きだった、よく遊んだおもちゃは？",
-  "一番好き、または得意だった科目は？",
-  "人生の転機だった（気がする）できごとは？",
-  "１年以内に買ったものの中で一番高いものは？",
-  "仕事中の服装と、寝るときの格好（服装）は？",
-  "イラッとするのはどんなときですか？"
+  "Q. 人と比べて苦しくなるのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
+  "Q. 手放したいのに手放せないものは？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
+  "Q. 認められたいと思うのはどんな瞬間？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
+  "Q. つい見栄を張ってしまうのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿"
 ];
 
-let count = 0;
-let currentQuestion = "";
+let lastIndex = -1;
 
-function getSecureRandomInt(max) {
-  const array = new Uint32Array(1);
-  window.crypto.getRandomValues(array);
-  return array[0] % max;
-}
+// 表示回数（端末ごと）
+let count = localStorage.getItem("bonnoCount") || 0;
+document.getElementById("count").innerText =
+  `あなたで ${count} 回目の質問です`;
 
-function flipCard() {
+function drawCard() {
+  let i;
+  do {
+    i = Math.floor(Math.random() * questions.length);
+  } while (i === lastIndex);
+  lastIndex = i;
+
   const card = document.getElementById("card");
-  const sound = document.getElementById("flipSound");
+  const kirari = document.getElementById("kirari");
+  const sound = document.getElementById("flip-sound");
 
-  if (!card.classList.contains("flipped")) {
-    const i = getSecureRandomInt(questions.length);
-    currentQuestion = questions[i];
-    document.getElementById("question").textContent = currentQuestion;
+  card.classList.add("flip");
+  kirari.classList.add("show");
+  sound.currentTime = 0;
+  sound.play();
+
+  setTimeout(() => {
+    document.getElementById("question").innerText = questions[i];
 
     count++;
-    document.getElementById("count").textContent =
+    localStorage.setItem("bonnoCount", count);
+    document.getElementById("count").innerText =
       `あなたで ${count} 回目の質問です`;
 
-    sound.currentTime = 0;
-    sound.play();
-  }
+    setupShare(questions[i]);
 
-  card.classList.toggle("flipped");
+    card.classList.remove("flip");
+    kirari.classList.remove("show");
+    document.getElementById("share-area").style.display = "block";
+  }, 300);
 }
 
-/* ===== 共有 ===== */
-function shareText() {
-  return `今日ひらいた煩悩。\n\nQ. ${currentQuestion}\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿`;
-}
+function setupShare(q) {
+  const text = "今日ひらいた煩悩質問。\n" + q + "\n\n#煩悩カード";
+  const e = encodeURIComponent(text);
+  const u = encodeURIComponent(location.href);
 
-function shareX(e) {
-  e.stopPropagation();
-  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText())}`;
-  window.open(url, "_blank");
-}
+  document.getElementById("share-x").href =
+    `https://twitter.com/intent/tweet?text=${e}&url=${u}`;
 
-function shareLINE(e) {
-  e.stopPropagation();
-  const url = `https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(shareText())}`;
-  window.open(url, "_blank");
-}
+  document.getElementById("share-line").href =
+    `https://social-plugins.line.me/lineit/share?url=${u}&text=${e}`;
 
-function shareInstagram(e) {
-  e.stopPropagation();
-  alert(
-    "Instagramは文章をコピーして投稿してください。\n\n" +
-    shareText()
-  );
+  document.getElementById("share-insta").href =
+    "https://www.instagram.com/";
 }
 </script>
-
 </body>
 </html>
+
