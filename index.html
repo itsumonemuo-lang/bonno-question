@@ -6,7 +6,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===== ページ全体背景 ===== */
 body {
   margin: 0;
   padding: 40px 16px;
@@ -16,7 +15,6 @@ body {
   text-align: center;
 }
 
-/* ===== 見出し ===== */
 h1 {
   font-size: 1.1em;
   letter-spacing: 0.08em;
@@ -43,7 +41,7 @@ h1 {
   transform: rotateY(180deg);
 }
 
-/* ===== 光り演出 ===== */
+/* 光り演出 */
 .card-inner::after {
   content: "";
   position: absolute;
@@ -61,7 +59,7 @@ h1 {
   opacity: 1;
 }
 
-/* ===== 表裏共通 ===== */
+/* 表裏共通 */
 .card-face {
   position: absolute;
   inset: 0;
@@ -75,7 +73,7 @@ h1 {
   box-sizing: border-box;
 }
 
-/* ===== 表 ===== */
+/* 表 */
 .card-front img {
   width: 100%;
   height: 100%;
@@ -92,19 +90,41 @@ h1 {
   border-radius: 999px;
 }
 
-/* ===== 裏（和紙風） ===== */
+/* 裏 */
 .card-back {
   transform: rotateY(180deg);
   background: url("washi.jpg") center/cover;
-  font-size: 1.15em;
-  line-height: 1.8;
+  font-size: 1.1em;
+  line-height: 1.9;
+  text-align: left;
 }
 
-/* ===== カウント ===== */
+/* カウント */
 .count {
-  font-size: 0.8em;
+  font-size: 0.75em;
   opacity: 0.7;
+  margin-bottom: 10px;
+}
+
+/* ===== シェア ===== */
+.share-area {
+  margin-top: 24px;
+}
+
+.share-title {
+  font-size: 0.9em;
   margin-bottom: 8px;
+  opacity: 0.8;
+}
+
+.share-buttons button {
+  margin: 4px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  border: none;
+  font-size: 0.8em;
+  cursor: pointer;
+  background: rgba(255,255,255,0.85);
 }
 </style>
 </head>
@@ -127,13 +147,22 @@ h1 {
       <div>
         <div class="count" id="count"></div>
         <p id="question">ここに質問が表示されます</p>
+
+        <div class="share-area">
+          <div class="share-title">この煩悩をシェアする</div>
+          <div class="share-buttons">
+            <button onclick="shareX()">X</button>
+            <button onclick="shareLINE()">LINE</button>
+            <button onclick="shareInstagram()">Instagram</button>
+          </div>
+        </div>
+
       </div>
     </div>
 
   </div>
 </div>
 
-<!-- 効果音 -->
 <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
@@ -152,6 +181,7 @@ const questions = [
 ];
 
 let count = 0;
+let currentQuestion = "";
 
 function getSecureRandomInt(max) {
   const array = new Uint32Array(1);
@@ -165,7 +195,9 @@ function flipCard() {
 
   if (!card.classList.contains("flipped")) {
     const i = getSecureRandomInt(questions.length);
-    document.getElementById("question").textContent = questions[i];
+    currentQuestion = questions[i];
+    document.getElementById("question").textContent = currentQuestion;
+
     count++;
     document.getElementById("count").textContent =
       `あなたで ${count} 回目の質問です`;
@@ -176,8 +208,26 @@ function flipCard() {
 
   card.classList.toggle("flipped");
 }
+
+/* ===== 共有 ===== */
+function shareText() {
+  return `今日ひらいた煩悩。\n\n「${currentQuestion}」`;
+}
+
+function shareX() {
+  const url = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText())}`;
+  window.open(url, "_blank");
+}
+
+function shareLINE() {
+  const url = `https://social-plugins.line.me/lineit/share?text=${encodeURIComponent(shareText())}`;
+  window.open(url, "_blank");
+}
+
+function shareInstagram() {
+  alert("Instagramは投稿前に文章をコピーしてください。\n\n" + shareText());
+}
 </script>
 
 </body>
 </html>
-
