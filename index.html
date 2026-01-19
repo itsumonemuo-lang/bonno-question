@@ -94,6 +94,12 @@ h1 {
   flex-direction: column;
 }
 
+.answer-guide {
+  font-size: 0.85em;
+  opacity: 0.55;
+  margin-top: 6px;
+}
+
 .share-btn {
   margin-top: 16px;
   display: inline-block;
@@ -124,6 +130,7 @@ h1 {
     <div class="card-face card-back">
       <div>
         <p id="question">ここに質問が表示されます</p>
+        <p class="answer-guide">（ここに答えてね）</p>
         <a id="shareX" class="share-btn" href="#" target="_blank">
           Xで共有する
         </a>
@@ -164,10 +171,23 @@ function flipCard() {
     const q = questions[getSecureRandomInt(questions.length)];
     document.getElementById("question").textContent = q;
 
-    const url = encodeURIComponent(location.href);
-    const text = encodeURIComponent("煩悩Maxカードで出た質問👇\n" + q);
+    const pageUrl = location.href;
+    const hashtags = "#煩悩カードゲーム #にゃむ阿弥陀仏VS悟リーチ";
+
+    const shareText =
+`煩悩Maxカードで出た質問👇
+Q.${q}
+
+A.
+（ここに答えてね）
+
+${pageUrl}
+
+${hashtags}`;
+
     document.getElementById("shareX").href =
-      `https://x.com/intent/tweet?text=${text}&url=${url}`;
+      "https://x.com/intent/tweet?text=" +
+      encodeURIComponent(shareText);
 
     sound.currentTime = 0;
     sound.play();
