@@ -2,158 +2,178 @@
 <html lang="ja">
 <head>
 <meta charset="UTF-8">
-<title>煩悩カード</title>
+<title>煩悩Maxカード</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
 body {
   margin: 0;
-  padding: 0;
-  font-family: "Hiragino Mincho ProN", serif;
-  background: url("background.jpg") center / cover no-repeat fixed;
+  padding: 40px 16px;
+  font-family: system-ui, sans-serif;
+  background: url("background.jpg") no-repeat center center fixed;
+  background-size: cover;
   text-align: center;
 }
 
-#container {
-  min-height: 100vh;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+h1 {
+  font-size: 1.1em;
+  letter-spacing: 0.08em;
+  margin-bottom: 24px;
 }
 
-#card {
+.card-container {
+  perspective: 1000px;
+  max-width: 360px;
+  margin: 0 auto;
+}
+
+.card-inner {
   position: relative;
-  width: 90%;
-  max-width: 420px;
-  background: url("washi.jpg") center / cover;
-  padding: 32px 26px;
-  border-radius: 14px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-  overflow: hidden;
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
+  cursor: pointer;
 }
 
-/* きらり演出 */
-#card::after {
+.card-inner.flipped {
+  transform: rotateY(180deg);
+}
+
+.card-inner::after {
   content: "";
   position: absolute;
-  inset: -40%;
-  background: linear-gradient(
-    120deg,
-    rgba(255,255,255,0) 30%,
-    rgba(255,255,255,0.7) 50%,
-    rgba(255,255,255,0) 70%
-  );
-  transform: translateX(-100%);
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0) 60%);
   opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
 }
 
-#card.sparkle::after {
-  animation: sparkle 0.7s ease-out;
+.card-inner.flipped::after {
+  opacity: 1;
 }
 
-@keyframes sparkle {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  30% {
-    opacity: 1;
-  }
-  100% {
-    transform: translateX(100%);
-    opacity: 0;
-  }
+.card-face {
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  backface-visibility: hidden;
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  box-sizing: border-box;
 }
 
-button {
-  margin-top: 16px;
-  padding: 12px 22px;
-  font-size: 16px;
-  border-radius: 999px;
-  border: none;
-  cursor: pointer;
+.card-front img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 14px;
+}
+
+.tap-text {
+  position: absolute;
+  bottom: 14px;
+  font-size: 0.85em;
   background: rgba(255,255,255,0.85);
+  padding: 6px 14px;
+  border-radius: 999px;
 }
 
-#question {
-  font-size: 18px;
-  margin-top: 26px;
-  line-height: 1.9;
-  white-space: pre-wrap;
-}
-
-#share-area {
-  margin-top: 26px;
-  display: none;
+.card-back {
+  transform: rotateY(180deg);
+  background: url("washi.jpg") center/cover;
+  font-size: 1.15em;
+  line-height: 1.8;
+  flex-direction: column;
 }
 
 .share-btn {
+  margin-top: 16px;
   display: inline-block;
-  padding: 10px 18px;
+  font-size: 0.85em;
+  padding: 8px 14px;
   border-radius: 999px;
-  text-decoration: none;
-  font-size: 14px;
   background: #000;
   color: #fff;
+  text-decoration: none;
 }
 </style>
 </head>
 
 <body>
-<div id="container">
-  <div id="card">
 
-    <button onclick="drawCard()">カードをめくる</button>
+<h1>煩悩Maxカード</h1>
 
-    <div id="question"></div>
+<div class="card-container">
+  <div class="card-inner" id="card" onclick="flipCard()">
 
-    <div id="share-area">
-      <a id="share-x" class="share-btn" target="_blank">Xでシェアする</a>
+    <!-- 表 -->
+    <div class="card-face card-front">
+      <img src="front.png" alt="煩悩カード 表">
+      <div class="tap-text">タップしてひらく</div>
+    </div>
+
+    <!-- 裏 -->
+    <div class="card-face card-back">
+      <div>
+        <p id="question">ここに質問が表示されます</p>
+        <a id="shareX" class="share-btn" href="#" target="_blank">
+          Xで共有する
+        </a>
+      </div>
     </div>
 
   </div>
 </div>
 
-<!-- 効果音 -->
 <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
 const questions = [
-  "Q. 人と比べて苦しくなるのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. 手放したいのに手放せないものは？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. 認められたいと思うのはどんな瞬間？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿",
-  "Q. つい見栄を張ってしまうのはどんなとき？\n\nA. ＿＿＿＿＿＿＿＿＿＿＿＿"
+  "自由にキャッチコピーや肩書をつけて名のってください",
+  "自分の時間をつくるなら早起き派、夜更かし派？",
+  "実行済みの「ひとり○○」の中で、一番ハードルが高いと思うものは？",
+  "直近の善行を教えてください",
+  "全SNS系アカウントの合計フォロワー数を教えてください",
+  "子供の頃に好きだった、よく遊んだおもちゃは？",
+  "一番好き、または得意だった科目は？",
+  "人生の転機だった（気がする）できごとは？",
+  "１年以内に買ったものの中で一番高いものは？",
+  "仕事中の服装と、寝るときの格好（服装）は？",
+  "イラッとするのはどんなときですか？"
 ];
 
-function drawCard() {
+function getSecureRandomInt(max) {
+  const array = new Uint32Array(1);
+  window.crypto.getRandomValues(array);
+  return array[0] % max;
+}
+
+function flipCard() {
   const card = document.getElementById("card");
   const sound = document.getElementById("flipSound");
 
-  // 質問をランダム表示
-  const q = questions[Math.floor(Math.random() * questions.length)];
-  document.getElementById("question").innerText = q;
+  if (!card.classList.contains("flipped")) {
+    const q = questions[getSecureRandomInt(questions.length)];
+    document.getElementById("question").textContent = q;
 
-  // きらり演出
-  card.classList.remove("sparkle");
-  void card.offsetWidth; // 再発火用
-  card.classList.add("sparkle");
+    const url = encodeURIComponent(location.href);
+    const text = encodeURIComponent("煩悩Maxカードで出た質問👇\n" + q);
+    document.getElementById("shareX").href =
+      `https://x.com/intent/tweet?text=${text}&url=${url}`;
 
-  // 音（きらりと同期）
-  sound.currentTime = 0;
-  sound.play();
+    sound.currentTime = 0;
+    sound.play();
+  }
 
-  // X共有
-  const shareText =
-    "今日ひらいた煩悩。\n\n" +
-    q +
-    "\n\n" +
-    location.href;
-
-  document.getElementById("share-x").href =
-    "https://twitter.com/intent/tweet?text=" +
-    encodeURIComponent(shareText);
-
-  document.getElementById("share-area").style.display = "block";
+  card.classList.toggle("flipped");
 }
 </script>
 
