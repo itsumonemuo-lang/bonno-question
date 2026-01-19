@@ -6,39 +6,36 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-/* ===== ページ全体の背景 ===== */
+/* ===== ページ全体背景 ===== */
 body {
   margin: 0;
   padding: 40px 16px;
   font-family: system-ui, sans-serif;
-  text-align: center;
-
-  background: url('background.jpg') no-repeat center center fixed;
+  background: url("background.jpg") no-repeat center center fixed;
   background-size: cover;
+  text-align: center;
 }
 
-/* ===== タイトル ===== */
+/* ===== 見出し ===== */
 h1 {
   font-size: 1.1em;
   letter-spacing: 0.08em;
   margin-bottom: 24px;
-  color: #222;
 }
 
-/* ===== カード外枠 ===== */
+/* ===== カード ===== */
 .card-container {
-  perspective: 1200px;
+  perspective: 1000px;
   max-width: 360px;
   margin: 0 auto;
 }
 
-/* ===== カード本体 ===== */
 .card-inner {
   position: relative;
   width: 100%;
   aspect-ratio: 3 / 4;
   transform-style: preserve-3d;
-  transition: transform 0.9s cubic-bezier(.4,.2,.2,1);
+  transition: transform 0.8s cubic-bezier(.4,.2,.2,1);
   cursor: pointer;
 }
 
@@ -46,26 +43,39 @@ h1 {
   transform: rotateY(180deg);
 }
 
-/* ===== 共通 ===== */
+/* ===== 光り演出 ===== */
+.card-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card-inner.flipped::after {
+  opacity: 1;
+}
+
+/* ===== 表裏共通 ===== */
 .card-face {
   position: absolute;
   inset: 0;
   border-radius: 18px;
   backface-visibility: hidden;
-  box-shadow: 0 14px 35px rgba(0,0,0,0.25);
+  box-shadow: 0 12px 30px rgba(0,0,0,0.25);
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 24px;
+  padding: 20px;
   box-sizing: border-box;
 }
 
 /* ===== 表 ===== */
-.card-front {
-  overflow: hidden;
-  background: #fff;
-}
-
 .card-front img {
   width: 100%;
   height: 100%;
@@ -77,50 +87,24 @@ h1 {
   position: absolute;
   bottom: 14px;
   font-size: 0.85em;
-  letter-spacing: 0.1em;
   background: rgba(255,255,255,0.85);
   padding: 6px 14px;
   border-radius: 999px;
 }
 
-/* ===== 裏（和紙） ===== */
+/* ===== 裏（和紙風） ===== */
 .card-back {
   transform: rotateY(180deg);
-  background: url('washi.jpg') center / cover no-repeat;
-  color: #222;
-  text-align: left;
-}
-
-/* 和紙の上に白をうっすら重ねる */
-.card-back::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: rgba(255,255,255,0.75);
-  border-radius: 18px;
-}
-
-/* 中身 */
-.card-content {
-  position: relative;
-  z-index: 1;
-  width: 100%;
-}
-
-/* カウント */
-#count {
-  font-size: 0.75em;
-  opacity: 0.7;
-  margin-bottom: 12px;
-  text-align: center;
-}
-
-/* 質問文 */
-#question {
+  background: url("washi.jpg") center/cover;
   font-size: 1.15em;
-  line-height: 1.9;
-  letter-spacing: 0.03em;
-  word-break: break-word;
+  line-height: 1.8;
+}
+
+/* ===== カウント ===== */
+.count {
+  font-size: 0.8em;
+  opacity: 0.7;
+  margin-bottom: 8px;
 }
 </style>
 </head>
@@ -140,14 +124,17 @@ h1 {
 
     <!-- 裏 -->
     <div class="card-face card-back">
-      <div class="card-content">
-        <div id="count">あなたで 0 回目の質問です</div>
-        <div id="question">ここに質問が表示されます</div>
+      <div>
+        <div class="count" id="count"></div>
+        <p id="question">ここに質問が表示されます</p>
       </div>
     </div>
 
   </div>
 </div>
+
+<!-- 効果音 -->
+<audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
 const questions = [
@@ -174,6 +161,7 @@ function getSecureRandomInt(max) {
 
 function flipCard() {
   const card = document.getElementById("card");
+  const sound = document.getElementById("flipSound");
 
   if (!card.classList.contains("flipped")) {
     const i = getSecureRandomInt(questions.length);
@@ -181,6 +169,9 @@ function flipCard() {
     count++;
     document.getElementById("count").textContent =
       `あなたで ${count} 回目の質問です`;
+
+    sound.currentTime = 0;
+    sound.play();
   }
 
   card.classList.toggle("flipped");
@@ -189,3 +180,4 @@ function flipCard() {
 
 </body>
 </html>
+
