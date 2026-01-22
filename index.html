@@ -9,7 +9,7 @@
 body {
   margin: 0;
   padding: 40px 16px;
-  font-family: system-ui, sans-serif;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
   background: url("background.jpg") no-repeat center center fixed;
   background-size: cover;
   text-align: center;
@@ -21,6 +21,7 @@ h1 {
   margin-bottom: 24px;
 }
 
+/* --- カード --- */
 .card-container {
   perspective: 1000px;
   max-width: 360px;
@@ -40,6 +41,24 @@ h1 {
   transform: rotateY(180deg);
 }
 
+/* キラッと演出 */
+.card-inner::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 18px;
+  background: radial-gradient(circle at top left,
+    rgba(255,255,255,0.6),
+    rgba(255,255,255,0) 60%);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.card-inner.flipped::after {
+  opacity: 1;
+}
+
 .card-face {
   position: absolute;
   inset: 0;
@@ -53,6 +72,7 @@ h1 {
   box-sizing: border-box;
 }
 
+/* 表 */
 .card-front img {
   width: 100%;
   height: 100%;
@@ -69,29 +89,26 @@ h1 {
   border-radius: 999px;
 }
 
-/* ===== 裏面 ===== */
+/* 裏 */
 .card-back {
   transform: rotateY(180deg);
   background: url("washi.jpg") center/cover;
-  font-size: 1.15em;
-  line-height: 1.8;
-
-  /* ここが重要 */
-  align-items: center;
-  justify-content: flex-start;
-}
-
-/* 質問ブロックを一段下げる */
-.question-block {
-  margin-top: 42px; /* ← 数値を増減して微調整OK */
+  font-size: clamp(0.95rem, 4vw, 1.15rem); /* スマホ最適化 */
+  line-height: 1.7;
   text-align: center;
 }
 
+#question {
+  margin: 0;
+  padding: 0 6px;
+  word-break: break-word;
+}
+
 .share-btn {
-  margin-top: 20px;
+  margin-top: 18px;
   display: inline-block;
   font-size: 0.85em;
-  padding: 10px 18px;
+  padding: 8px 16px;
   border-radius: 999px;
   background: #000;
   color: #fff;
@@ -115,9 +132,8 @@ h1 {
 
     <!-- 裏 -->
     <div class="card-face card-back">
-      <div class="question-block">
+      <div>
         <p id="question">ここに質問が表示されます</p>
-        <p>A.</p>
         <a id="shareX" class="share-btn" href="#" target="_blank">
           Xで共有する
         </a>
@@ -131,11 +147,30 @@ h1 {
 
 <script>
 const allQuestions = [
+  "すごいなぁと思う人は誰ですか？",
+  "好きな名言or座右の銘を教えてください",
+  "おすすめのスマホアプリを教えてください",
+  "直近の善行を教えてください",
+  "好きだったテレビ番組は？",
+  "好きなにおいは？",
+  "一番好き、または得意だった科目は？",
+  "半年以上続いている、もしくは続けたい習慣は？",
+  "自分はだめなやつだ、と思うのはどんなとき？",
+  "言われて嬉しいのは？センスいいねor面白いね",
+  "褒めてあげたい、自分の過去の選択・行動は？",
+  "あなた流の人生を楽しむコツは？",
+  "今の社会で、最も問題だと感じていることは？",
+  "総理大臣になったら、どんな政策をつくりたい？",
   "一番印象に残っている学校行事の思い出は？",
   "人生の中でかなり緊張したエピソードは？",
-  "昔の自分に一言だけ言えるなら？"
+  "あの世に行く直前に聞きたい曲は？",
+  "一番やりたくない家事は？",
+  "昔の自分に一言だけ言えるなら？",
+  "無意識に距離を取りたくなる人の特徴は？",
+  "自分が一生理解できないと思うジャンルは？"
 ];
 
+// 出題用（ここから削除）
 let remainingQuestions = [...allQuestions];
 
 function getSecureRandomInt(max) {
@@ -152,7 +187,7 @@ function flipCard() {
 
     if (remainingQuestions.length === 0) {
       document.getElementById("question").textContent =
-        "Q.すべての質問を引ききりました。";
+        "すべての質問を引ききりました。";
       document.getElementById("shareX").style.display = "none";
       return;
     }
@@ -162,15 +197,16 @@ function flipCard() {
 
     document.getElementById("question").textContent = "Q." + q;
 
+    const pageUrl = location.href;
+    const hashtags = "#煩悩カードゲーム #にゃむ阿弥陀仏VS悟リーチ";
+
     const shareText =
 `煩悩Maxカードで出た質問👇
 Q.${q}
 
-A.
+${pageUrl}
 
-${location.href}
-
-#煩悩カードゲーム #にゃむ阿弥陀仏VS悟リーチ`;
+${hashtags}`;
 
     document.getElementById("shareX").href =
       "https://x.com/intent/tweet?text=" +
@@ -186,3 +222,4 @@ ${location.href}
 
 </body>
 </html>
+
