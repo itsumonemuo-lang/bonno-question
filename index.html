@@ -124,6 +124,7 @@ h1 {
     <div class="card-face card-back">
       <div>
         <p id="question">ここに質問が表示されます</p>
+        <p>A.</p>
         <a id="shareX" class="share-btn" href="#" target="_blank">
           Xで共有する
         </a>
@@ -136,7 +137,7 @@ h1 {
 <audio id="flipSound" src="flip.mp3" preload="auto"></audio>
 
 <script>
-const questions = [
+const allQuestions = [
   "すごいなぁと思う人は誰ですか？",
   "好きな名言or座右の銘を教えてください",
   "おすすめのスマホアプリを教えてください",
@@ -147,7 +148,6 @@ const questions = [
   "半年以上続いている、もしくは続けたい習慣は？",
   "自分はだめなやつだ、と思うのはどんなとき？",
   "言われて嬉しいのは？センスいいねor面白いね",
-  "すごいなぁと思う人は誰ですか？",
   "褒めてあげたい、自分の過去の選択・行動は？",
   "あなた流の人生を楽しむコツは？",
   "今の社会で、最も問題だと感じていることは？",
@@ -161,6 +161,9 @@ const questions = [
   "自分が一生理解できないと思うジャンルは？"
 ];
 
+// 出題用（ここから削除していく）
+let remainingQuestions = [...allQuestions];
+
 function getSecureRandomInt(max) {
   const array = new Uint32Array(1);
   window.crypto.getRandomValues(array);
@@ -172,7 +175,17 @@ function flipCard() {
   const sound = document.getElementById("flipSound");
 
   if (!card.classList.contains("flipped")) {
-    const q = questions[getSecureRandomInt(questions.length)];
+
+    if (remainingQuestions.length === 0) {
+      document.getElementById("question").textContent =
+        "Q.すべての質問を引ききりました。";
+      document.getElementById("shareX").style.display = "none";
+      return;
+    }
+
+    const index = getSecureRandomInt(remainingQuestions.length);
+    const q = remainingQuestions.splice(index, 1)[0];
+
     document.getElementById("question").textContent = "Q." + q;
 
     const pageUrl = location.href;
@@ -202,3 +215,4 @@ ${hashtags}`;
 
 </body>
 </html>
+
