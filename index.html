@@ -41,7 +41,6 @@ h1 {
   transform: rotateY(180deg);
 }
 
-/* キラッと演出 */
 .card-inner::after {
   content: "";
   position: absolute;
@@ -72,7 +71,6 @@ h1 {
   box-sizing: border-box;
 }
 
-/* 表 */
 .card-front img {
   width: 100%;
   height: 100%;
@@ -89,11 +87,10 @@ h1 {
   border-radius: 999px;
 }
 
-/* 裏 */
 .card-back {
   transform: rotateY(180deg);
   background: url("washi.jpg") center/cover;
-  font-size: clamp(0.95rem, 4vw, 1.15rem); /* スマホ最適化 */
+  font-size: clamp(0.95rem, 4vw, 1.15rem);
   line-height: 1.7;
   text-align: center;
 }
@@ -152,27 +149,26 @@ const allQuestions = [
   "おすすめのスマホアプリを教えてください",
   "生まれ変わるなら？鳥or魚",
   "より辛いのは？両想いだけど会えないor会えるけど片想い",
-  "どっちの方がマシ？　　　　　　　　　　　歯を磨けないor足を洗えない",
+  "どっちの方がマシ？歯を磨けないor足を洗えない",
   "好きだったテレビ番組は？",
   "好きなにおいor香りは？",
   "一番好き、または得意だった科目は？",
   "半年以上続いている、もしくは続けたい習慣は？",
   "自分はだめなやつだ、と思うのはどんなとき？",
-  "言われて嬉しいのは？　　　　　センスいいねor面白いね",
-  "褒めてあげたい、自分の過去の　　　選択・行動は？",
+  "言われて嬉しいのは？センスいいねor面白いね",
+  "褒めてあげたい、自分の過去の選択・行動は？",
   "あなた流の人生を楽しむコツは？",
   "今の社会で、最も問題だと感じていることは？",
   "総理大臣になったら、どんな政策をつくりたい？",
-  "一番印象に残っている　　　　　　　　　　　学校行事の思い出は？",
-  "人生の中でかなり緊張した　　　　　　エピソードは？",
+  "一番印象に残っている学校行事の思い出は？",
+  "人生の中でかなり緊張したエピソードは？",
   "人生最後に聞きたい曲は？",
   "一番やりたくない家事は？",
   "昔の自分に一言だけ言えるなら？",
-  "無意識に距離を取りたくなる　　　人の特徴は？",
-  "自分が一生理解できないと思う　　　  ジャンルは？"
+  "無意識に距離を取りたくなる人の特徴は？",
+  "自分が一生理解できないと思うジャンルは？"
 ];
 
-// 出題用（ここから削除）
 let remainingQuestions = [...allQuestions];
 
 function getSecureRandomInt(max) {
@@ -200,13 +196,18 @@ function flipCard() {
     document.getElementById("question").textContent = "Q." + q;
 
     const pageUrl = location.href;
+    const crowdFundingUrl = "https://camp-fire.jp/projects/912318/preview?token=fwdpfbue&utm_campaign=cp_po_share_c_msg_projects_show";
     const hashtags = "#煩悩カードゲーム #にゃむ阿弥陀仏VS悟リーチ";
 
     const shareText =
 `煩悩Maxカードで出た質問👇
 Q.${q}
 
+▼カードを引いたページ
 ${pageUrl}
+
+▼クラウドファンディングはこちら
+${crowdFundingUrl}
 
 ${hashtags}`;
 
@@ -224,4 +225,3 @@ ${hashtags}`;
 
 </body>
 </html>
-
